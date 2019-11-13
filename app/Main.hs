@@ -11,12 +11,16 @@ import Control.Monad.Reader
 
 main :: IO ()
 main = do
+  run 8080 . app . CompilationServer =<< newProjectChannel
+
+
+newProjectChannel :: IO (BoundedChan Project)
+newProjectChannel = do
   c <- newBoundedChan maxPreloadedProjects
-  _ <- forkIO $ writeList2Chan c (map (Project . show) [1..])
-
-  run 8080 . app $ CompilationServer c
-
-  return ()
+  void . forkIO $ do
+    ps <- mapM (makeProject . show) [1..]
+    writeList2Chan c ps
+  return c
 
 
 api :: Proxy BasicCompilationAPI

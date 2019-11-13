@@ -19,6 +19,7 @@ import Servant
 import Data.ByteString.Lazy (fromStrict, toStrict)
 import Data.List as L (isSuffixOf, find)
 import Data.Maybe
+import GHC.IO.Handle as H
 
 
 -- type CompliationAPI = BasicCompiler :<|> IncrementalCompiler
@@ -47,11 +48,21 @@ data File = File
    , contents :: ByteString
    } deriving (Generic, Serialize)
 
-type ProjectIdx = String
+type ProjectId = String
 
 data Project
    = Project
-   { idx :: ProjectIdx
+   { idx :: ProjectId
+   , process :: Process
+   }
+
+
+data Process
+   = Process
+   { handle :: ProcessHandle
+   , stdin  :: Handle
+   , stdout :: Handle
+   , stderr :: Handle
    }
 
 
@@ -94,33 +105,38 @@ compileServer = handleBasicCompilation
 
 
 handleBasicCompilation :: ContractSource -> Compiler [File]
-handleBasicCompilation inputs = do
-  project <- makeProject inputs
+handleBasicCompilation source = do
+  project <- getProject
+  saveContractSource project source
   invokeCompilation project
   getOutputFiles project
 
 
-makeProject :: ContractSource -> Compiler Project
-makeProject source = do
-  project <- getProject
-  makeDirectory project
-  copyDefaultProject project
-  saveContractSource project source
-  return project
+makeProject :: ProjectId -> IO Project
+makeProject pid = do
+  makeDirectory pid
+  copyDefaultProject pid
+  let cmd = (shell $ "read && cabal build"){cwd = Just ("./projects/" ++ pid), std_in = CreatePipe, std_out = CreatePipe, std_err = CreatePipe}
+  (Just stdin, Just stdout, Just stderr, proc) <- createProcess cmd
+  return (Project pid (Process proc stdin stdout stderr))
 
 
-makeDirectory :: Project -> Compiler ()
-makeDirectory (Project idx) = liftIO . void $
-  readCreateProcess (shell $ "mkdir " ++ show idx){cwd = Just "./projects"} ""
+wake :: Process -> Compiler ()
+wake (Process _ stdin _ _) = liftIO $ hPutChar stdin '\n'
 
 
-copyDefaultProject :: Project -> Compiler ()
-copyDefaultProject (Project pid) = liftIO . void $
+makeDirectory :: ProjectId -> IO ()
+makeDirectory pid = void $
+  readCreateProcess (shell $ "mkdir " ++ show pid){cwd = Just "./projects"} ""
+
+
+copyDefaultProject :: ProjectId -> IO ()
+copyDefaultProject pid = void $
   readCreateProcess (shell $ "cp defaultProject ./projects/" ++ pid) ""
 
 
 saveContractSource :: Project -> ContractSource -> Compiler ()
-saveContractSource (Project pid) (ContractSource inputs) = mapM_ go inputs
+saveContractSource (Project pid _) (ContractSource inputs) = mapM_ go inputs
   where
     go (File name contents) = liftIO $ BS.writeFile ("./projects/src/" ++ name) contents
 
@@ -132,10 +148,9 @@ getProject = do -- (projects <$> ask) >>= (liftIO . readChan)
 
 
 invokeCompilation :: Project -> Compiler String
-invokeCompilation p = liftIO $ do
-  let cmd = (shell "cabal build"){cwd = Just ("./projects/" ++ idx p)}
-  (_, _, stderr) <- readCreateProcessWithExitCode cmd ""
-  return stderr
+invokeCompilation (Project _ proc@(Process _ _ _ stderr)) = do
+  wake proc
+  liftIO (H.hGetContents stderr)
 
 
 -- TODO: figure out exactly where Cabal puts all of the outputs that we want
@@ -143,6 +158,7 @@ invokeCompilation p = liftIO $ do
 getOutputFiles :: Project -> Compiler [File]
 getOutputFiles idx = do
   return undefined
+
 
 -- Might need to put a field in the reader state that deals with which ghc
 -- variant we are using.
