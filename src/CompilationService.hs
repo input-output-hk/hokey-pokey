@@ -4,6 +4,7 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module CompilationService where
 
@@ -20,6 +21,8 @@ import Data.ByteString.Lazy (fromStrict, toStrict)
 import Data.List as L (isSuffixOf, find)
 import Data.Maybe
 import GHC.IO.Handle as H
+import Distribution.Parsec.Parser
+import Distribution.Parsec.Field
 
 
 -- type CompliationAPI = BasicCompiler :<|> IncrementalCompiler
@@ -110,6 +113,18 @@ handleBasicCompilation source = do
   saveContractSource project source
   invokeCompilation project
   getOutputFiles project
+
+
+projectInfo :: ContractSource -> (String, [String])
+projectInfo (ContractSource files) = (show $ Prelude.head executableNames, [])
+  where
+    Just  cabalFile   = L.find (\f -> ".cabal" `L.isSuffixOf` filename f) files
+    Right cabalFields = readFields (contents cabalFile)
+    --
+    executableNames = catMaybes (Prelude.map executableSection cabalFields)
+    --
+    executableSection (Section sec [SecArgStr _ name] _) | getName sec == "executable" = Just name
+    executableSection _                                                = Nothing
 
 
 makeProject :: ProjectId -> IO Project

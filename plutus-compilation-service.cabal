@@ -41,6 +41,7 @@ library
     , servant-server
     , wai
     , warp
+    , Cabal
   default-language: Haskell2010
 
 executable plutus-compilation-service
