@@ -1,19 +1,12 @@
 cabal-version: 1.12
-
--- This file has been generated from package.yaml by hpack version 0.31.2.
---
--- see: https://github.com/sol/hpack
---
--- hash: db3c961c8b8dc33b810115b7c23cfab25598ab9fdb251c1c492930bf768607c9
-
-name:           plutus-compilation-service
+name:           hokey-pokey
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/JoshMeredith/plutus-service#readme>
-homepage:       https://github.com/JoshMeredith/plutus-service#readme
-bug-reports:    https://github.com/JoshMeredith/plutus-service/issues
+description:    Please see the README on GitHub at <https://github.com/JoshMeredith/hokey-pokey#readme>
+homepage:       https://github.com/input-output-hk/hokey-pokey#readme
+bug-reports:    https://github.com/input-output-hk/hokey-pokey/issues
 author:         Josh Meredith
 maintainer:     joshmeredith2008@gmail.com
-copyright:       
+copyright:
 build-type:     Simple
 extra-source-files:
     README.md
@@ -21,13 +14,13 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/input-output-hk/plutus-compilation-service
+  location: https://github.com/input-output-hk/hokey-pokey
 
 library
   exposed-modules:
       CompilationService
   other-modules:
-      Paths_plutus_compilation_service
+      Paths_hokey_pokey
   hs-source-dirs:
       src
   build-depends:
@@ -44,10 +37,10 @@ library
     , Cabal
   default-language: Haskell2010
 
-executable plutus-compilation-service
+executable hokey-pokey
   main-is: Main.hs
   other-modules:
-      Paths_plutus_compilation_service
+      Paths_hokey_pokey
   hs-source-dirs:
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
@@ -57,7 +50,7 @@ executable plutus-compilation-service
     , bytestring
     , cereal
     , mtl
-    , plutus-compilation-service
+    , hokey-pokey
     , process
     , servant
     , servant-server
@@ -65,11 +58,11 @@ executable plutus-compilation-service
     , warp
   default-language: Haskell2010
 
-test-suite plutus-service-test
+test-suite hokey-pokey-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_plutus_service
+      Paths_hokey_pokey
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
@@ -79,7 +72,7 @@ test-suite plutus-service-test
     , bytestring
     , cereal
     , mtl
-    , plutus-service
+    , hokey-pokey
     , process
     , servant
     , servant-server
