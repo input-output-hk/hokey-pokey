@@ -1,3 +1,3 @@
-# Changelog for plutus-service
+# Changelog for hokey-pokey
 
 ## Unreleased changes

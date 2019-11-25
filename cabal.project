@@ -1,0 +1,6 @@
+index-state: 2019-11-20T00:00:00Z
+
+packages:
+  ./.
+
+write-ghc-environment-files: never
