@@ -81,6 +81,7 @@ maxPreloadedProjects = 10
 data CompilationServer
    = CompilationServer
    { projects :: BoundedChan Project
+   , execFile :: String
    }
 
 
@@ -102,27 +103,44 @@ instance MimeRender OctetStream [File] where
   mimeRender _ = fromStrict . encode
 
 
-compileServer :: ServerT BasicCompilationAPI Compiler
-compileServer = handleBasicCompilation
-           :<|> fmap linkedResult . handleBasicCompilation
+compileServer :: (String -> CompilationServer) -> Server BasicCompilationAPI
+compileServer reader
+  =    handleBasicCompilation reader
+  :<|> const (throwError err501)
 
 
-handleBasicCompilation :: ContractSource -> Compiler [File]
-handleBasicCompilation source = do
+handleBasicCompilation :: (String -> CompilationServer) -> ContractSource -> Handler [File]
+handleBasicCompilation reader source = do
+  (contractExecutable, _) <- projectInfo source
+  runReaderT (handleBasicCompilation' source) (reader contractExecutable)
+
+
+handleBasicCompilation' :: ContractSource -> Compiler [File]
+handleBasicCompilation' source = do
   project <- getProject
   saveContractSource project source
   invokeCompilation project
   getOutputFiles project
 
 
-projectInfo :: ContractSource -> (String, [String])
-projectInfo (ContractSource files) = (show $ Prelude.head executableNames, [])
+projectInfo :: ContractSource -> Handler (String, [String])
+projectInfo (ContractSource files) = do
+  --
+  cabalFile <-
+    case L.find (\f -> ".cabal" `L.isSuffixOf` filename f) files of
+      Just f  -> return f
+      Nothing -> throwError err400
+  --
+  cabalFields <-
+    case readFields (contents cabalFile) of
+      Left _  -> throwError err400
+      Right c -> return c
+  --
+  let executableNames = catMaybes (Prelude.map executableSection cabalFields)
+  --
+  return (show $ Prelude.head executableNames, [])
+  --
   where
-    Just  cabalFile   = L.find (\f -> ".cabal" `L.isSuffixOf` filename f) files
-    Right cabalFields = readFields (contents cabalFile)
-    --
-    executableNames = catMaybes (Prelude.map executableSection cabalFields)
-    --
     executableSection (Section sec [SecArgStr _ name] _) | getName sec == "executable" = Just name
     executableSection _                                                = Nothing
 
@@ -158,7 +176,7 @@ saveContractSource (Project pid _) (ContractSource inputs) = mapM_ go inputs
 
 getProject :: Compiler Project
 getProject = do -- (projects <$> ask) >>= (liftIO . readChan)
-  CompilationServer ps <- ask
+  CompilationServer ps _ <- ask
   liftIO $ readChan ps
 
 
@@ -172,10 +190,5 @@ invokeCompilation (Project _ proc@(Process _ _ _ stderr)) = do
 -- to return, for both ghc and ghcjs.
 getOutputFiles :: Project -> Compiler [File]
 getOutputFiles idx = do
+
   return undefined
-
-
--- Might need to put a field in the reader state that deals with which ghc
--- variant we are using.
-linkedResult :: [File] -> File
-linkedResult = fromJust . L.find (L.isSuffixOf "jsexe" . filename)

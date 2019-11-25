@@ -27,5 +27,5 @@ api :: Proxy BasicCompilationAPI
 api = Proxy
 
 
-app :: CompilationServer -> Application
-app readData = serve api $ hoistServer api (`runReaderT` readData) compileServer
+app :: (String -> CompilationServer) -> Application
+app readData = serve api (compileServer readData)
