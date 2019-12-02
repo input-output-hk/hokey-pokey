@@ -13,6 +13,17 @@ let
   project = pkgs.haskell-nix.cabalProject {
     src = pkgs.haskell-nix.haskellLib.cleanGit { src = ./.; };
     ghc = pkgs.haskell-nix.compiler.${haskellCompiler};
+    modules = [{
+      packages.hokey-pokey.components.tests.hokey-pokey-test.preCheck = ''
+        export HOME=$(mktemp -d)
+        mkdir $HOME/.cabal
+        ln -s ${pkgs.haskell-nix.dotCabal {
+          index-state = "2019-12-01T00:00:00Z";
+          sha256 = "1akhhhp96qmr4qm7c7z2ij1cwkhw65rz912yl4k92764wgp3jpnd";
+          inherit (pkgs.haskell-nix) cabal-install nix-tools;
+        }}/.cabal/* $HOME/.cabal
+      '';
+    }];
   };
   addCabalInstall = drv: drv.overrideAttrs (oldAttrs: {
     buildInputs = (oldAttrs.buildInputs or []) ++
