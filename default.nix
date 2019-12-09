@@ -2,7 +2,7 @@
 # where
 , nixpkgs ? haskellNix + "/nixpkgs"
 , haskellNixpkgsArgs ? import haskellNix
-, system ? null
+, system ? builtins.currentSystem
 # where
 , haskellNix ? builtins.fetchTarball {
     url = "https://github.com/input-output-hk/haskell.nix/archive/bff6b2d3bf88cbad3b96f00a394a8bb69ec4fecb.tar.gz";
