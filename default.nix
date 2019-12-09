@@ -37,9 +37,15 @@ let
     buildInputs = (oldAttrs.buildInputs or []) ++
       [ pkgs.haskell.compiler.ghcjs node ];
   });
-in project // {
+in project // rec {
   inherit pkgs;
   hokey-pokey-env = [ pkgs.haskell.compiler.ghcjs pkgs.haskell-nix.cabal-install node ];
+  hokey-pokey-wrapped = project.hokey-pokey.components.exes.hokey-pokey.overrideAttrs (oldAttrs: {
+    nativeBuildInputs = oldAttrs.nativeBuildInputs ++ [ pkgs.makeWrapper ];
+    postInstall = ''
+        wrapProgram $out/bin/hokey-pokey --prefix PATH ":" ${pkgs.lib.makeBinPath hokey-pokey-env }
+      '';
+  });
   shell = addGhcjsAndNode (project.shellFor {});
   checks = pkgs.recurseIntoAttrs {
     hokey-pokey-test = addCabalInstall
