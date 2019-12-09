@@ -12,10 +12,16 @@ let this = import ./. { system = pkgs.system; };
       createHome = true;
     };
 in {
-  options.services.hokey-pokey.enable = mkOption {
-    type = types.bool;
-    default = false;
-    description = "If enabled, run hokey-pokey service";
+  options.services.hokey-pokey = {
+    enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "If enabled, run hokey-pokey service";
+    };
+    user = mkOption {
+      description = "Unix system user that runs the hokey-pokey service";
+      type = types.str;
+    };
   };
   config = mkIf cfg.enable {
     services.hokey-pokey.user = mkDefault defaultUser;
