@@ -21,7 +21,7 @@ in {
         RestartSec = 10;
       };
       script = ''
-          ${hokey-pokey.hsPkgs.hokey-pokey.components.exes.hokey-pokey}/bin/hokey-pokey
+          ${hokey-pokey.components.exes.hokey-pokey}/bin/hokey-pokey
       '';
     };
   };
