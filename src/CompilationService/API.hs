@@ -40,8 +40,9 @@ import GHC.Generics (Generic)
 import GHC.IO.Exception (IOErrorType(..), IOException(..))
 
 import Servant
-       (errBody, err400, err501, Server, Handler, ReqBody, Post, JSON,
-        (:<|>)(..), (:>))
+       (errBody, err400, err501, Server, Handler, ReqBody, Post
+       , JSON, PlainText
+       , (:<|>)(..), (:>))
 
 import System.Directory (createDirectoryIfMissing)
 import System.Exit (ExitCode)
@@ -69,8 +70,16 @@ type CompileLink =
     :> ReqBody '[JSON] ContractSource
     :> Post    '[JSON] File
 
+-- We'll do @PlainText@, as the undelrying represetnation is Text
+-- I'd consider OctetStream to be more correct, though that would
+-- mean we'd have to deal with ByteStrings all the way...
+type CompileMain =
+  "compile" :> "main"
+    :> ReqBody '[PlainText] Text
+    :> Post    '[PlainText] Text
+
 type BasicCompilationAPI
-  = CompileAll :<|> CompileLink
+  = CompileAll :<|> CompileLink :<|> CompileMain
 
 newtype ContractSource
    = ContractSource
@@ -129,6 +138,7 @@ compileServer :: (String -> CompilationServer) -> Server BasicCompilationAPI
 compileServer reader'
   =    handleBasicCompilation reader'
   :<|> const (throwError err501)
+  :<|> handleMainModuleCompilation reader'
 
 
 handleBasicCompilation :: (String -> CompilationServer) -> ContractSource -> Handler [File]
@@ -136,6 +146,25 @@ handleBasicCompilation reader' source = do
   (contractExecutable, _) <- projectInfo source
   runReaderT (handleBasicCompilation' source) (reader' contractExecutable)
 
+handleMainModuleCompilation :: (String -> CompilationServer) -> Text -> Handler Text
+handleMainModuleCompilation reader' source =
+  contents . Prelude.head <$> handleBasicCompilation reader' (ContractSource [cabalFile, mainFile])
+  where
+    mainFile = File "Main.hs" source
+    cabalFile = File
+      { filename = "test.cabal"
+      , contents = "\
+        \cabal-version:  1.12\n\
+        \name:           test\n\
+        \version:        0.1.0.0\n\
+        \build-type:     Simple\n\
+        \executable test\n\
+        \  main-is: Main.hs\n\
+        \  build-depends:\n\
+        \      base >=4.7 && <5\n\
+        \  default-language: Haskell2010\n\
+        \"
+      }
 
 handleBasicCompilation' :: ContractSource -> Compiler [File]
 handleBasicCompilation' source = do
