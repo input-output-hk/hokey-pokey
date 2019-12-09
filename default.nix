@@ -1,12 +1,15 @@
 { pkgs ? import nixpkgs (haskellNixpkgsArgs // { inherit system; })
+# where
 , nixpkgs ? haskellNix + "/nixpkgs"
 , haskellNixpkgsArgs ? import haskellNix
+, system ? null
+# where
 , haskellNix ? builtins.fetchTarball {
     url = "https://github.com/input-output-hk/haskell.nix/archive/bff6b2d3bf88cbad3b96f00a394a8bb69ec4fecb.tar.gz";
     sha256 = "0zzlmn3l9k2yqsy945izc96kki56kswsx7d1laqg1ak206bjmgg0";
   }
+
 , haskellCompiler ? "ghc865"
-, system ? null
 }:
 let
   node = pkgs.nodejs-12_x;
