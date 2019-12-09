@@ -39,7 +39,7 @@ let
   });
 in project // {
   inherit pkgs;
-  hokey-pokey-wrapped = addCabalInstall (addGhcjsAndNode pkgs.hokey-pokey.components.exes.hokey-pokey);
+  hokey-pokey-env = [ pkgs.haskell.compiler.ghcjs pkgs.haskell-nix.cabal-install node ];
   shell = addGhcjsAndNode (project.shellFor {});
   checks = pkgs.recurseIntoAttrs {
     hokey-pokey-test = addCabalInstall
