@@ -39,6 +39,7 @@ let
   });
 in project // {
   inherit pkgs;
+  hokey-pokey-wrapped = addCabalInstall (addGhcjsAndNode pkgs.hokey-pokey.components.exes.hokey-pokey);
   shell = addGhcjsAndNode (project.shellFor {});
   checks = pkgs.recurseIntoAttrs {
     hokey-pokey-test = addCabalInstall
