@@ -11,18 +11,14 @@ in {
   config = mkIf cfg.enable {
     systemd.services.hokey-pokey = {
       enable = true;
-      after = [
-      ];
-      requires = [
-      ];
+      wantedBy = [ "multi-user.target" ];
+      after = [ "network-online.target" ];
       serviceConfig = {
-        Type = "simple";
-        Restart = "always";
-        RestartSec = 10;
+        # Type = "simple";
+        Restart = "always"; # "on-failure"
+        RestartSec = 10; # 120
+        ExecStart = "${this.hokey-pokey.components.exes.hokey-pokey}/bin/hokey-pokey";
       };
-      script = ''
-          ${this.hokey-pokey.components.exes.hokey-pokey}/bin/hokey-pokey
-      '';
     };
   };
 }
