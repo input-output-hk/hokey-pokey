@@ -1,4 +1,4 @@
-{ pkgs ? import nixpkgs haskellNixpkgsArgs
+{ pkgs ? import nixpkgs (haskellNixpkgsArgs // { inherit system; })
 , nixpkgs ? haskellNix + "/nixpkgs"
 , haskellNixpkgsArgs ? import haskellNix
 , haskellNix ? builtins.fetchTarball {
