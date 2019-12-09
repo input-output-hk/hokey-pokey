@@ -33,9 +33,9 @@ in {
         WorkingDirectory = cfg.user.home;
       };
     };
-  };
-  users = mkIf (cfg.user == defaultUser) {
-    users.hokey-pokey-agent = defaultUserDetails;
+    users = mkIf (cfg.user == defaultUser) {
+      users.hokey-pokey-agent = defaultUserDetails;
+    };
   };
 }
 
