@@ -36,7 +36,7 @@ in {
         RestartSec = 10; # 120
         ExecStart = "${this.hokey-pokey.components.exes.hokey-pokey}/bin/hokey-pokey";
         User = cfg.user;
-        WorkingDirectory = cfg.user.home;
+        WorkingDirectory = config.users.${cfg.user}.home;
       };
     };
     users = mkIf (cfg.user == defaultUser) {
