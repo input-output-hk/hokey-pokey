@@ -37,6 +37,8 @@ in {
         ExecStart = "${this.hokey-pokey.components.exes.hokey-pokey}/bin/hokey-pokey";
         User = cfg.user;
         WorkingDirectory = config.users.users.${cfg.user}.home;
+        StandardOutput = "journal+console";
+        StandardError = "journal+console";
       };
     };
     users = mkIf (cfg.user == defaultUser) {
