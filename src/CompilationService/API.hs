@@ -209,7 +209,7 @@ makeProject pid = do
   dataDir <- getDataDir
   createDirectoryIfMissing True projectDir
   copyDirectoryRecursive normal (dataDir </> "defaultProject") projectDir
-  let cmd = (shell "read && cabal build --ghcjs all")
+  let cmd = (shell $ "read && nix-build -E '(import " ++ dataDir </> "hokey-pokey-drv-standalone.nix" ++ ") ./.' -o all.js")
         {cwd = Just projectDir, std_in = CreatePipe, std_out = CreatePipe, std_err = CreatePipe}
   (Just stdin, Just stdout, Just stderr, proc) <- createProcess cmd
   return (Project pid (Process proc stdin stdout stderr))
@@ -286,9 +286,7 @@ getOutputFiles (Project pid _proc) = do
   let projectDir = "projects" </> pid
   CompilationServer {execFile} <- ask
   liftIO $ Prelude.putStrLn $ "hello " <> execFile
-  js <- liftIO $ BS.readFile (projectDir </> "dist-newstyle/build/x86_64-linux/ghcjs-8.6.0.1/test-0.1.0.0/x"
-    </> execFile </> "build"
-    </> execFile </> execFile <.> "jsexe" </> "all.js")
+  js <- liftIO $ BS.readFile (projectDir </> "all.js")
   case decodeUtf8' js of
     Left _err -> error "GHCJS output invalid utf8"
     Right jsText -> return [File "all.js" jsText]
