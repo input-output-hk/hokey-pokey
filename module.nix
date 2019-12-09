@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 with lib;
-let this = import (../.) {};
+let this = import ./. { system = pkgs.system; };
     cfg = config.services.hokey-pokey;
 in {
   options.services.hokey-pokey.enable = mkOption {
