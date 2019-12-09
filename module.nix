@@ -34,7 +34,7 @@ in {
         # Type = "simple";
         Restart = "always"; # "on-failure"
         RestartSec = 10; # 120
-        ExecStart = "${this.hokey-pokey.components.exes.hokey-pokey}/bin/hokey-pokey";
+        ExecStart = "${this.hokey-pokey-wrapped}/bin/hokey-pokey";
         User = cfg.user;
         WorkingDirectory = config.users.users.${cfg.user}.home;
         StandardOutput = "journal+console";
