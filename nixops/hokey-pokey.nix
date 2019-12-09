@@ -1,6 +1,6 @@
 { config, lib, pkgs, ... }:
 with lib;
-let hokey-pokey = import (../.) {};
+let this = import (../.) {};
     cfg = config.services.hokey-pokey;
 in {
   options.services.hokey-pokey.enable = mkOption {
@@ -21,7 +21,7 @@ in {
         RestartSec = 10;
       };
       script = ''
-          ${hokey-pokey.components.exes.hokey-pokey}/bin/hokey-pokey
+          ${this.hokey-pokey.components.exes.hokey-pokey}/bin/hokey-pokey
       '';
     };
   };
