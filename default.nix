@@ -5,8 +5,9 @@
 , system ? builtins.currentSystem
 # where
 , haskellNix ? builtins.fetchTarball {
-    url = "https://github.com/input-output-hk/haskell.nix/archive/bff6b2d3bf88cbad3b96f00a394a8bb69ec4fecb.tar.gz";
-    sha256 = "0zzlmn3l9k2yqsy945izc96kki56kswsx7d1laqg1ak206bjmgg0";
+    url = "https://github.com/input-output-hk/haskell.nix/archive/f5d1f8.tar.gz";
+    # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/f5d1f8.tar.gz
+    sha256 = "1720vv0958jhpjkndf7pbb1dc4g5rvycfqqxbarcramiv1ybs4gk";
   }
 
 , haskellCompiler ? "ghc865"
