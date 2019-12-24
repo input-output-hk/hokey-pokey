@@ -3,3 +3,4 @@ stack.yaml.lock
 *~
 /dist-newstyle/
 /projects/
+node_modules

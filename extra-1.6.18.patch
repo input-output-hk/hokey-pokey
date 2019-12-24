@@ -1,0 +1,13 @@
+diff --git a/extra.cabal b/extra.cabal
+index 422efc5..26bbb69 100644
+--- a/extra.cabal
++++ b/extra.cabal
+@@ -35,7 +35,7 @@ library
+         directory,
+         filepath,
+         process,
+-        clock >= 0.7,
++        -- clock >= 0.7,
+         -- For GHC 7.10 since Data.List.NonEmpty wasn't in base then
+         semigroups,
+         time

@@ -1,0 +1,14 @@
+diff --git a/cryptonite-openssl.cabal b/cryptonite-openssl.cabal
+index ceb275a..0b01704 100644
+--- a/cryptonite-openssl.cabal
++++ b/cryptonite-openssl.cabal
+@@ -49,7 +49,8 @@ Library
+         cpp-options: -D__x86_64__
+       if arch(i386)
+         cpp-options: -D__i386__
+-    extra-libraries: crypto
++    if !os(ghcjs)
++      extra-libraries: crypto
+   cpp-options:       -DUSE_OPENSSL
+ 
+ Test-Suite test-cryptonite-openssl

@@ -1,0 +1,15 @@
+diff --git a/basement.cabal b/basement.cabal
+index 132a154..c770943 100644
+--- a/basement.cabal
++++ b/basement.cabal
+@@ -158,6 +158,7 @@ library
+   else
+     cpp-options: -DARCH_IS_UNKNOWN_ENDIAN
+   include-dirs:      cbits
+-  c-sources:         cbits/foundation_mem.c
+-  if impl(ghc < 8.2)
+-    c-sources:       cbits/basement_rts.c
++  if !os(ghcjs)
++    c-sources:         cbits/foundation_mem.c
++    if impl(ghc < 8.2)
++      c-sources:       cbits/basement_rts.c
