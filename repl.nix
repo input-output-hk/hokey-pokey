@@ -114,6 +114,8 @@
                 foundation = import (pkgs.haskell-nix.callCabalToNix { name = "foundation"; src = ./contrib/foundation/foundation; });
                 # https://github.com/biegunka/terminal-size/pull/12
                 terminal-size = import (pkgs.haskell-nix.callCabalToNix { name = "terminal-size"; src = ./contrib/terminal-size; });
+                # https://github.com/haskell/zlib/pull/25
+                zlib = import (pkgs.haskell-nix.callCabalToNix { name = "zlib"; src = ./contrib/zlib; });
             };
         })];
 
