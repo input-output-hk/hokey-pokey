@@ -4,12 +4,14 @@
 , haskellNixpkgsArgs ? import haskellNix
 , system ? builtins.currentSystem
 # where
+# ../haskell.nix at a99a0942284e63099116a44c4ccdec49be200184
 , haskellNix ? ../haskell.nix
 # builtins.fetchTarball {
 #     url = "https://github.com/input-output-hk/haskell.nix/archive/f5d1f8.tar.gz";
 #     # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/f5d1f8.tar.gz
 #     sha256 = "1720vv0958jhpjkndf7pbb1dc4g5rvycfqqxbarcramiv1ybs4gk";
 #   }
+# ../plutus at 2b9e6493721aa5814698017a4e387dae2c3b2d8d
 , plutus-src ? ../plutus #builtins.fetchTarball {
 #    url = "https://github.com/luite/plutus/archive/5faa07a.tar.gz";
 #    sha256 = "1q9lpqda65hwxq22xd7iizdqipn7vafhpbsr55dzzvcy6cpajbcw";
@@ -104,10 +106,13 @@
             packages = {
                 # needed for Cabal-3 compat.
                 happy = hackage.happy."1.19.12".revisions.default;
-                # cryptonite-openssl = import (pkgs.haskell-nix.callCabalToNix { name = "cryptonite-openssl"; src = ./contrib/cryptonite-openssl; });
+                # https://github.com/input-output-hk/cardano-crypto/pull/62
                 cardano-crypto = import (pkgs.haskell-nix.callCabalToNix { name = "cardano-crypto"; src = ./contrib/cardano-crypto; });
+                # https://github.com/haskell-foundation/foundation/pull/531
                 basement = import (pkgs.haskell-nix.callCabalToNix { name = "basement"; src = ./contrib/foundation/basement; });
+                # https://github.com/haskell-foundation/foundation/pull/531
                 foundation = import (pkgs.haskell-nix.callCabalToNix { name = "foundation"; src = ./contrib/foundation/foundation; });
+                # https://github.com/biegunka/terminal-size/pull/12
                 terminal-size = import (pkgs.haskell-nix.callCabalToNix { name = "terminal-size"; src = ./contrib/terminal-size; });
             };
         })];
