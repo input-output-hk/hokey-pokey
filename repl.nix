@@ -14,9 +14,9 @@
 # ../plutus at 2b9e6493721aa5814698017a4e387dae2c3b2d8d
 , plutus-src ? # ../plutus
     builtins.fetchTarball {
-        url = "https://github.com/input-output-hk/plutus/archive/d7d542f5.tar.gz";
-        # nix-prefetch-url --unpack https://github.com/input-output-hk/plutus/archive/d7d542f5.tar.gz
-        sha256 = "0n7dnbrnkjnsa9b99mjc8d2z54apwy2hd5byslz2ybj8biyv797z";
+        url = "https://github.com/input-output-hk/plutus/archive/8f1117f8.tar.gz";
+        # nix-prefetch-url --unpack https://github.com/input-output-hk/plutus/archive/8f1117f8.tar.gz
+        sha256 = "06v4cz96bhm2w09gy0fr9jmc09g4f5rjyz2wjgwcl8vrhhv00mh6";
     }
 , haskellCompiler ? "ghc865"
 }: rec {
