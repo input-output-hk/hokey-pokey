@@ -7,16 +7,16 @@
 # ../haskell.nix at a99a0942284e63099116a44c4ccdec49be200184
 , haskellNix ? #../haskell.nix
     builtins.fetchTarball {
-        url = "https://github.com/input-output-hk/haskell.nix/archive/6c68f7d.tar.gz";
-        # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/6c68f7d.tar.gz
-        sha256 = "1161149aj7km2n6njb2dk71ddic8kjm4sszy7vfpigp1z3r31ysl";
+        url = "https://github.com/input-output-hk/haskell.nix/archive/74fd7087.tar.gz";
+        # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/74fd7087.tar.gz
+        sha256 = "1hc5b9jg4nk8iiqnjmk5jacnm2v3alzq218whyfx602srwq5wma1";
     }
 # ../plutus at 2b9e6493721aa5814698017a4e387dae2c3b2d8d
-, plutus-src ? # ../plutus
+, plutus-src ? #../plutus
     builtins.fetchTarball {
-        url = "https://github.com/input-output-hk/plutus/archive/8f1117f8.tar.gz";
-        # nix-prefetch-url --unpack https://github.com/input-output-hk/plutus/archive/8f1117f8.tar.gz
-        sha256 = "06v4cz96bhm2w09gy0fr9jmc09g4f5rjyz2wjgwcl8vrhhv00mh6";
+        url = "https://github.com/input-output-hk/plutus/archive/f0e1bb21.tar.gz";
+        # nix-prefetch-url --unpack https://github.com/input-output-hk/plutus/archive/f0e1bb21.tar.gz
+        sha256 = "0213zakdw8sjdmax6755l3vc8bx1m0bix7fb0yivv8fvb90wg002";
     }
 , haskellCompiler ? "ghc865"
 }: rec {
@@ -209,39 +209,6 @@
         # event hough `--with-ghc` is specificed.
         configureArgs = "--ghcjs --with-ghcjs=js-unknown-ghcjs-ghc";
         # plan-sha256 = "1vc3zs5wqbxszf8896w56kd65877irbgl5k1dg2agmdh8zcjskmh";
-        pkg-def-extras = [(hackage: {
-            packages = {
-                # needed for Cabal-3 compat.
-                happy = hackage.happy."1.19.12".revisions.default;
-                # https://github.com/input-output-hk/cardano-crypto/pull/62
-                cardano-crypto = import (pkgs.haskell-nix.callCabalToNix { name = "cardano-crypto"; src = ./contrib/cardano-crypto; });
-                # https://github.com/haskell-foundation/foundation/pull/531
-                basement = import (pkgs.haskell-nix.callCabalToNix { name = "basement"; src = ./contrib/foundation/basement; });
-                # https://github.com/haskell-foundation/foundation/pull/531
-                foundation = import (pkgs.haskell-nix.callCabalToNix { name = "foundation"; src = ./contrib/foundation/foundation; });
-                # https://github.com/biegunka/terminal-size/pull/12
-                terminal-size = import (pkgs.haskell-nix.callCabalToNix { name = "terminal-size"; src = ./contrib/terminal-size; });
-                # https://github.com/haskell/zlib/pull/25
-                zlib = import (pkgs.haskell-nix.callCabalToNix { name = "zlib"; src = ./contrib/zlib; });
-
-                # https://github.com/TomMD/entropy/pull/54
-                entropy = import (pkgs.haskell-nix.callCabalToNix { name = "entropy"; src = ./contrib/entropy; });
-
-                # https://github.com/luite/network at b77e7c10e29ccf3512be67defbe0fb66ac2bc4c8
-                # this makes it compile, not necessarily "work".
-                network = import (pkgs.haskell-nix.callCabalToNix { name = "network"; src = ./contrib/network; });
-
-                # this is essential to build warp.
-                # https://github.com/kazu-yamamoto/simple-sendfile/pull/34
-                simple-sendfile = import (pkgs.haskell-nix.callCabalToNix { name = "simple-sendfile"; src = ./contrib/simple-sendfile; });
-
-                # need these because for reasons I don't fully undertand yet, we fail to respect the freeze file.
-                # FIXME: Maybe the cabalProject doesn't copy over the freeze file.
-                servant-server = hackage.servant-server."0.15".revisions.default;
-                servant-websockets = hackage.servant-websockets."1.1.0".revisions.default;
-            };
-        })];
-
         modules = [
             {
                 bootPkgs = [ "ghcjs-prim" ];
