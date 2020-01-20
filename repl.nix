@@ -14,14 +14,19 @@
 # ../plutus at 2b9e6493721aa5814698017a4e387dae2c3b2d8d
 , plutus-src ? #../plutus
     builtins.fetchTarball {
-        url = "https://github.com/input-output-hk/plutus/archive/f0e1bb21.tar.gz";
-        # nix-prefetch-url --unpack https://github.com/input-output-hk/plutus/archive/f0e1bb21.tar.gz
-        sha256 = "0213zakdw8sjdmax6755l3vc8bx1m0bix7fb0yivv8fvb90wg002";
+        url = "https://github.com/input-output-hk/plutus/archive/6fb5c77d.tar.gz";
+        # nix-prefetch-url --unpack https://github.com/input-output-hk/plutus/archive/6fb5c77d.tar.gz
+        sha256 = "0a09k85ibs4bx2vrg6r911f2lnf4zd5rwd49mx1jswi1dvxpxkrm";
     }
 , haskellCompiler ? "ghc865"
 }: rec {
     shell = pkgs.mkShell {
-        buildInputs = [  pkgs.pkgsCross.ghcjs.buildPackages.haskell-nix.compiler.ghc865 ];
+        buildInputs = [
+          pkgs.pkgsCross.ghcjs.buildPackages.haskell-nix.compiler.ghc865
+          pkgs.haskell-nix.snapshots."lts-14.20".happy.components.exes.happy
+          pkgs.haskell-nix.snapshots."lts-14.20".alex.components.exes.alex
+          cabal-project.hsPkgs.cabal-install.components.exes.cabal
+        ];
     };
     ghcjs = pkgs.pkgsCross.ghcjs.buildPackages.haskell-nix.compiler.ghc865;
     ghc = pkgs.haskell-nix.compiler.ghc865;
@@ -125,8 +130,8 @@
     # issue is that the Cabal version that ships with ghcjs is too old and too
     # restrictive (see the drop-pkg-db-check and no-final-check) patches.
     #
-    Cabal = pkgs.haskell-nix.hackage-package {
-        name = "Cabal"; version = "3.0.0.0";
+    cabal-project = pkgs.haskell-nix.hackage-project {
+        name = "cabal-install"; version = "3.0.0.0";
         modules = [
             { packages.Cabal.patches = [
                 ./Cabal-3.0.0.0-drop-pkg-db-check.diff
@@ -231,7 +236,7 @@
             }
             # We need this module to depend on a newer `Cabal` version for the setups.
             {
-                setup-depends = [ Cabal ];
+                setup-depends = [ cabal-project.hsPkgs.Cabal ];
             }
             {
                 # required to build the contract and have ghcjs find the plutus plugin in the host package database
