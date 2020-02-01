@@ -7,9 +7,9 @@
 # ../haskell.nix at a99a0942284e63099116a44c4ccdec49be200184
 , haskellNix ? #../haskell.nix
     builtins.fetchTarball {
-        url = "https://github.com/input-output-hk/haskell.nix/archive/74fd7087.tar.gz";
-        # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/74fd7087.tar.gz
-        sha256 = "1hc5b9jg4nk8iiqnjmk5jacnm2v3alzq218whyfx602srwq5wma1";
+        url = "https://github.com/input-output-hk/haskell.nix/archive/dbc8deae1057776fa6c786c48a35967a2c560358.tar.gz";
+        # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/dbc8deae1057776fa6c786c48a35967a2c560358.tar.gz
+        sha256 = "1hc5b9jg4nk8iiqnjmk5jacnm2v3alzq218whyfx602srwq5wm00";
     }
 # ../plutus at 2b9e6493721aa5814698017a4e387dae2c3b2d8d
 , plutus-src ? #../plutus
@@ -115,12 +115,12 @@
 
     # create a separete package db, that containst he plutus-plugin as well as it's dependencies.  We can then just pass this
     # package database as `-host-package-db` to ghcjs when we need the plugin.
-    plutus-plugin-pkg-db = pkgs.runCommand "plutus-plugin-pkg-db" { nativeBuildInputs = [ ghc ]; } ''
-        ghc-pkg init $out/package.conf.d
-        find "${plutus-plugin}/package.conf.d" -name "*.conf" -exec cp {} $out/package.conf.d \;
-        find "${plutus-plugin.configFiles}/package.conf.d" -name "*.conf" -exec cp {} $out/package.conf.d \;
-        ghc-pkg --package-db $out/package.conf.d recache
-    '';
+    plutus-plugin-pkg-db = (pkgs.runCommand "plutus-plugin-pkg-db" { nativeBuildInputs = [ ghc ]; } ''
+        ghc-pkg init $out/lib/ghc-8.6.5/package.conf.d
+        find "${plutus-plugin}/package.conf.d" -name "*.conf" -exec cp {} $out/lib/ghc-8.6.5/package.conf.d \;
+        find "${plutus-plugin.configFiles}/lib/ghc-8.6.5/package.conf.d" -name "*.conf" -exec cp {} $out/lib/ghc-8.6.5/package.conf.d \;
+        ghc-pkg --package-db $out/lib/ghc-8.6.5/package.conf.d recache
+    '') + "/lib/ghc-8.6.5";
 
     # -------------------------------------------------------------------------
     # Building a plutus contract
@@ -244,5 +244,16 @@
                 packages.plutus-use-cases.setupBuildFlags = [ "--ghcjs-option=-host-package-db=${plutus-plugin-pkg-db}/package.conf.d" ];
             }
         ];
+    });
+    # To try out the shell do (where ../plutus is the angerman/ghcjs-shell branch of plutus):
+    #   nix-shell repl.nix -A plutus-use-cases-shell
+    #   cd ../plutus/plutus-use-cases
+    #   echo 'packages: .' > cabal.project
+    #   cabal new-build --ghcjs --with-ghcjs=js-unknown-ghcjs-ghc --with-ghcjs-pkg=js-unknown-ghcjs-ghc-pkg --hsc2hs-option=--cross-compile --ghcjs-option=-host-package-db=$PLUTUS_PLUGIN_PKG_DB/package.conf.d plutus-use-cases:lib:plutus-use-cases
+    plutus-use-cases-shell = (plutus-use-cases.shellFor {
+      packages = ps: [ ps.plutus-use-cases ];
+      withHoogle = false;
+    }).overrideAttrs (drv: {
+      PLUTUS_PLUGIN_PKG_DB=plutus-plugin-pkg-db;
     });
 }
