@@ -9,7 +9,7 @@
     builtins.fetchTarball {
         url = "https://github.com/input-output-hk/haskell.nix/archive/dbc8deae1057776fa6c786c48a35967a2c560358.tar.gz";
         # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/dbc8deae1057776fa6c786c48a35967a2c560358.tar.gz
-        sha256 = "1hc5b9jg4nk8iiqnjmk5jacnm2v3alzq218whyfx602srwq5wm00";
+        sha256 = "057wjisqvmdfn1wyhdbw0cs5r03vypz2cvh3hdapiz4xi3x2gj67";
     }
 # ../plutus at 2b9e6493721aa5814698017a4e387dae2c3b2d8d
 , plutus-src ? #../plutus
