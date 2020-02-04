@@ -242,6 +242,7 @@
                 # required to build the contract and have ghcjs find the plutus plugin in the host package database
                 packages.plutus-use-cases.configureFlags = [ "--ghcjs-option=-host-package-db=${plutus-plugin-pkg-db}/package.conf.d" ];
                 packages.plutus-use-cases.setupBuildFlags = [ "--ghcjs-option=-host-package-db=${plutus-plugin-pkg-db}/package.conf.d" ];
+                packages.network.configureFlags = [ "--configure-option=--host=x86_64-linux" ];
             }
         ];
     });
