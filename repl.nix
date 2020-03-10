@@ -3,15 +3,12 @@
 , nixpkgs ? haskellNix + "/nixpkgs"
 , haskellNixpkgsArgs ? import haskellNix
 , system ? builtins.currentSystem
-# where
-# ../haskell.nix at a99a0942284e63099116a44c4ccdec49be200184
 , haskellNix ? # ../haskell.nix
     builtins.fetchTarball {
-        url = "https://github.com/input-output-hk/haskell.nix/archive/85c81350e9ab25cebd406bdd25a8a2cd744f56c3.tar.gz";
-        # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/85c81350e9ab25cebd406bdd25a8a2cd744f56c3.tar.gz
-        sha256 = "1wmwn1kgj64smng0y9cyn4bamr1xs8d82ndxkmad2w4nlzh2rffm";
+        url = "https://github.com/input-output-hk/haskell.nix/archive/a81943e99cfb2691b7562f0727bd84d0384f456c.tar.gz";
+        # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/a81943e99cfb2691b7562f0727bd84d0384f456c.tar.gz
+        sha256 = "0q5jis51zj0p51rf39zrpjfpcdm3ama4gp7rijq3gy4vl7y92jmr";
     }
-# ../plutus at 2b9e6493721aa5814698017a4e387dae2c3b2d8d
 , plutus-src ? # pkgs.haskell-nix.haskellLib.cleanGit { src = ../plutus; }
     builtins.fetchTarball {
         url = "https://github.com/input-output-hk/plutus/archive/f4dfa56f9c71cff7a48b165039d893d38d0bce01.tar.gz";
