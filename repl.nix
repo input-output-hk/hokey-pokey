@@ -5,18 +5,18 @@
 , system ? builtins.currentSystem
 # where
 # ../haskell.nix at a99a0942284e63099116a44c4ccdec49be200184
-, haskellNix ? #../haskell.nix
+, haskellNix ? # ../haskell.nix
     builtins.fetchTarball {
-        url = "https://github.com/input-output-hk/haskell.nix/archive/dbc8deae1057776fa6c786c48a35967a2c560358.tar.gz";
-        # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/dbc8deae1057776fa6c786c48a35967a2c560358.tar.gz
-        sha256 = "057wjisqvmdfn1wyhdbw0cs5r03vypz2cvh3hdapiz4xi3x2gj67";
+        url = "https://github.com/input-output-hk/haskell.nix/archive/85c81350e9ab25cebd406bdd25a8a2cd744f56c3.tar.gz";
+        # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/85c81350e9ab25cebd406bdd25a8a2cd744f56c3.tar.gz
+        sha256 = "1wmwn1kgj64smng0y9cyn4bamr1xs8d82ndxkmad2w4nlzh2rffm";
     }
 # ../plutus at 2b9e6493721aa5814698017a4e387dae2c3b2d8d
-, plutus-src ? #../plutus
+, plutus-src ? # pkgs.haskell-nix.haskellLib.cleanGit { src = ../plutus; }
     builtins.fetchTarball {
-        url = "https://github.com/input-output-hk/plutus/archive/6fb5c77d.tar.gz";
-        # nix-prefetch-url --unpack https://github.com/input-output-hk/plutus/archive/6fb5c77d.tar.gz
-        sha256 = "0a09k85ibs4bx2vrg6r911f2lnf4zd5rwd49mx1jswi1dvxpxkrm";
+        url = "https://github.com/input-output-hk/plutus/archive/a295ca53bc1871712911052001185dd185f98080.tar.gz";
+        # nix-prefetch-url --unpack https://github.com/input-output-hk/plutus/archive/a295ca53bc1871712911052001185dd185f98080.tar.gz
+        sha256 = "0a09k85ibs4bx2vrg6r911f2lnf4zd5rwd49mx1jswi1dvxpxk00";
     }
 , haskellCompiler ? "ghc865"
 }: rec {
@@ -103,7 +103,7 @@
                 packages.Cabal.patches = [ "${haskellNix}/overlays/patches/Cabal/fix-data-dir.patch" ];
                 packages.ghc.flags.ghci = pkgs.lib.mkForce true;
                 packages.ghci.flags.ghci = pkgs.lib.mkForce true;
-                packages.plutus-tx.flags = { ghcjs-plugin = true; };
+                packages.plutus-tx-plugin.flags = { ghcjs-plugin = true; };
 
                 packages.ghc-api-ghcjs = import (pkgs.haskell-nix.callCabalToNix { name = "ghc-api-ghcjs"; src = "${ghcjs.configured-src}/lib/ghc-api-ghcjs"; });
             }
@@ -111,16 +111,21 @@
                 packages.ghc-api-ghcjs.flags.use-host-template-haskell = pkgs.lib.mkForce true;
             }
         ];
-    }).plutus-tx.components.library;
+    });
 
     # create a separete package db, that containst he plutus-plugin as well as it's dependencies.  We can then just pass this
     # package database as `-host-package-db` to ghcjs when we need the plugin.
-    plutus-plugin-pkg-db = (pkgs.runCommand "plutus-plugin-pkg-db" { nativeBuildInputs = [ ghc ]; } ''
-        ghc-pkg init $out/lib/ghc-8.6.5/package.conf.d
-        find "${plutus-plugin}/package.conf.d" -name "*.conf" -exec cp {} $out/lib/ghc-8.6.5/package.conf.d \;
-        find "${plutus-plugin.configFiles}/lib/ghc-8.6.5/package.conf.d" -name "*.conf" -exec cp {} $out/lib/ghc-8.6.5/package.conf.d \;
-        ghc-pkg --package-db $out/lib/ghc-8.6.5/package.conf.d recache
-    '') + "/lib/ghc-8.6.5";
+    plutus-plugin-pkg-db-configFiles = plutus-plugin.makeConfigFiles {
+      fullName = "plutus-plugin-db";
+      identifier.name = "plutus-plugin-db";
+      component = {
+        depends = [ plutus-plugin.plutus-tx-plugin ];
+        libs = [];
+        frameworks = [];
+        doExactConfig = false;
+      };
+    };
+    plutus-plugin-pkg-db = plutus-plugin-pkg-db-configFiles + "/${plutus-plugin-pkg-db-configFiles.packageCfgDir}";
 
     # -------------------------------------------------------------------------
     # Building a plutus contract
@@ -240,9 +245,10 @@
             }
             {
                 # required to build the contract and have ghcjs find the plutus plugin in the host package database
-                packages.plutus-use-cases.configureFlags = [ "--ghcjs-option=-host-package-db=${plutus-plugin-pkg-db}/package.conf.d" ];
-                packages.plutus-use-cases.setupBuildFlags = [ "--ghcjs-option=-host-package-db=${plutus-plugin-pkg-db}/package.conf.d" ];
+                packages.plutus-use-cases.configureFlags = [ "--ghcjs-option=-host-package-db=${plutus-plugin-pkg-db}" ];
+                packages.plutus-use-cases.setupBuildFlags = [ "--ghcjs-option=-host-package-db=${plutus-plugin-pkg-db}" ];
                 packages.network.configureFlags = [ "--configure-option=--host=x86_64-linux" ];
+                packages.plutus-tx-plugin.doHaddock = false;
             }
         ];
     });
@@ -257,4 +263,39 @@
     }).overrideAttrs (drv: {
       PLUTUS_PLUGIN_PKG_DB=plutus-plugin-pkg-db;
     });
+    plutus-docker = pkgs.dockerTools.buildImage {
+      name = "plutusc";
+      tag = "latest";
+      contents = [plutus-use-cases-shell];
+    };
+    plutus-bundle = ghcjs.bundled-ghcjs {
+      compilerName = "plutusc";
+      db = plutus-use-cases-shell.configFiles;
+      hostDb = plutus-plugin-pkg-db-configFiles;
+    };
+    plutus-bundle-tar = pkgs.runCommand "plutus-bundle.tar.gz" {} ''
+      cd ${plutus-bundle}
+      tar -chzf $out .
+    '';
+    ubuntu = pkgs.dockerTools.pullImage {
+      imageName = "ubuntu";
+      imageDigest = "sha256:bd5f4f235eb31768b2c5caf1988bbdc182d4fc3cb6ee4aca6c6d74613f256140";
+      sha256 = "150nd664hnkzb81v61ycq761yxvjrz7m63p754zwif4vzjxqfywk";
+      finalImageTag = "19.10";
+      finalImageName = "ubuntu";
+    };
+    plutus-bundle-unpacked = pkgs.runCommand "plutus-bundle-unpacked" {} ''
+      mkdir -p $out/plutusc
+      cd $out/plutusc
+      tar -xzf ${plutus-bundle-tar}
+    '';
+    ubuntu-plutus-docker = pkgs.dockerTools.buildImage {
+      name = "ubuntu-plutusc";
+      tag = "latest";
+      fromImage = ubuntu;
+      contents = [plutus-bundle-unpacked];
+      config = {
+        Env = [ "PATH=/plutusc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" ];
+      };
+    };
 }
