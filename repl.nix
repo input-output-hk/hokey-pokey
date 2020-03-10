@@ -14,9 +14,9 @@
 # ../plutus at 2b9e6493721aa5814698017a4e387dae2c3b2d8d
 , plutus-src ? # pkgs.haskell-nix.haskellLib.cleanGit { src = ../plutus; }
     builtins.fetchTarball {
-        url = "https://github.com/input-output-hk/plutus/archive/a295ca53bc1871712911052001185dd185f98080.tar.gz";
-        # nix-prefetch-url --unpack https://github.com/input-output-hk/plutus/archive/a295ca53bc1871712911052001185dd185f98080.tar.gz
-        sha256 = "0a09k85ibs4bx2vrg6r911f2lnf4zd5rwd49mx1jswi1dvxpxk00";
+        url = "https://github.com/input-output-hk/plutus/archive/f4dfa56f9c71cff7a48b165039d893d38d0bce01.tar.gz";
+        # nix-prefetch-url --unpack https://github.com/input-output-hk/plutus/archive/f4dfa56f9c71cff7a48b165039d893d38d0bce01.tar.gz
+        sha256 = "0zfjplchwx9cxdqlji233yvpfkldfbkgmqlgk2kvp39w36lihs28";
     }
 , haskellCompiler ? "ghc865"
 }: rec {
