@@ -287,6 +287,14 @@
       };
     };
     # A bundle for macOS and linux systems like ubuntu (not NixOS) that can be relocated
+    # To test on macOS install gcc and node then
+    #   cd ../plutus/plutus-use-cases
+    #   mkdir plutusc
+    #   cd plutusc
+    #   tar -xzf $(nix-build ../../../plutus-compilation-service/repl.nix -A plutusc-bundle-tar)
+    #   cd ..
+    #   PATH=$(pwd)/plutusc/bin:$PATH plutusc -package plutus-wallet-api src/Language/PlutusTx/Coordination/Contracts.hs src/Language/PlutusTx/Coordination/Contracts/Game.hs exe/game/Main.hs
+    # Same steps should work on ubuntu or you can use ubuntu-plutusc-docker (defined bellow)
     plutusc-bundle = ghcjs.bundled-ghcjs {
       compilerName = "plutusc";
       db = plutus-use-cases-shell.configFiles;
