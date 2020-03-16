@@ -260,20 +260,44 @@
     }).overrideAttrs (drv: {
       PLUTUS_PLUGIN_PKG_DB=plutus-plugin-pkg-db;
     });
-    plutus-docker = pkgs.dockerTools.buildImage {
+    # This is a wrapper that workd outside of a nix-shell.
+    #   $(nix-build ../../hokey-pokey/repl.nix -A plutusc)/bin/plutusc src/Language/PlutusTx/Coordination/Contracts.hs src/Language/PlutusTx/Coordination/Contracts/Game.hs exe/game/Main.hs
+    plutusc = pkgs.runCommand "plutusc-wrapper" {
+      buildInputs = [
+        pkgs.makeWrapper
+      ];
+    } ''
+      mkdir -p $out/bin
+      makeWrapper ${plutus-use-cases-shell.ghc}/bin/js-unknown-ghcjs-ghc $out/bin/plutusc \
+          --add-flags '"-host-package-db=${plutus-plugin-pkg-db}"'
+    '';
+    # Docker conatainer built with nix.
+    #   docker load < $(nix-build repl.nix -A plutus-dockerc)
+    #   cd ../plutus/plutus-use-cases
+    #   docker run --rm -it -v$(pwd):/build -w /build plutusc plutusc src/Language/PlutusTx/Coordination/Contracts.hs src/Language/PlutusTx/Coordination/Contracts/Game.hs exe/game/Main.hs
+    plutusc-docker = pkgs.dockerTools.buildImage {
       name = "plutusc";
       tag = "latest";
-      contents = [plutus-use-cases-shell];
+      contents = [ plutus-use-cases-shell.ghc ];
+      extraCommands = "mkdir -m 0777 tmp";
+      config = {
+        Env = [
+          "PATH=${plutusc}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ];
+      };
     };
-    plutus-bundle = ghcjs.bundled-ghcjs {
+    # A bundle for macOS and linux systems like ubuntu (not NixOS) that can be relocated
+    plutusc-bundle = ghcjs.bundled-ghcjs {
       compilerName = "plutusc";
       db = plutus-use-cases-shell.configFiles;
       hostDb = plutus-plugin-pkg-db-configFiles;
     };
-    plutus-bundle-tar = pkgs.runCommand "plutus-bundle.tar.gz" {} ''
-      cd ${plutus-bundle}
+    # Tarball of plutusc-bundle
+    plutusc-bundle-tar = pkgs.runCommand "plutusc-bundle.tar.gz" {} ''
+      cd ${plutusc-bundle}
       tar -chzf $out .
     '';
+    # Base image for testing plutusc-bundle on Ubuntu
     ubuntu = pkgs.dockerTools.pullImage {
       imageName = "ubuntu";
       imageDigest = "sha256:bd5f4f235eb31768b2c5caf1988bbdc182d4fc3cb6ee4aca6c6d74613f256140";
@@ -281,16 +305,23 @@
       finalImageTag = "19.10";
       finalImageName = "ubuntu";
     };
-    plutus-bundle-unpacked = pkgs.runCommand "plutus-bundle-unpacked" {} ''
+    plutusc-bundle-unpacked = pkgs.runCommand "plutusc-bundle-unpacked" {} ''
       mkdir -p $out/plutusc
       cd $out/plutusc
-      tar -xzf ${plutus-bundle-tar}
+      tar -xzf ${plutusc-bundle-tar}
     '';
-    ubuntu-plutus-docker = pkgs.dockerTools.buildImage {
+    # Docker image that we can use to test that plutusc-bundle works on ubuntu.
+    # We use a Dockerfile to add gcc and node to the image because
+    # you cannot `apt-get install` stuff with `buildImage`.
+    #   docker load < $(nix-build repl.nix -A ubuntu-plutusc-docker)
+    #   docker build -t test-ubuntu-plutusc ./test-ubuntu-plutusc
+    #   cd ../plutus/plutus-use-cases
+    #   docker run --rm -it -v$(pwd):/build -w /build test-ubuntu-plutusc plutusc src/Language/PlutusTx/Coordination/Contracts.hs src/Language/PlutusTx/Coordination/Contracts/Game.hs exe/game/Main.hs
+    ubuntu-plutusc-docker = pkgs.dockerTools.buildImage {
       name = "ubuntu-plutusc";
       tag = "latest";
       fromImage = ubuntu;
-      contents = [plutus-bundle-unpacked];
+      contents = [plutusc-bundle-unpacked];
       config = {
         Env = [ "PATH=/plutusc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" ];
       };
