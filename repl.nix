@@ -334,4 +334,37 @@
         Env = [ "PATH=/plutusc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" ];
       };
     };
+    devcontainer = (import (builtins.fetchTarball {
+          url = "https://github.com/nix-community/docker-nixpkgs/archive/53440b208ed438d762a81825a60bab182e7550cc.tar.gz";
+          sha256 = "1qrcijbl21h16qxnpsgfbx3kzvpd5zwvzz48dp4lsra6h80q33ma";
+        })).devcontainer;
+    ghcide = (import (builtins.fetchTarball {
+          url = "https://github.com/cachix/ghcide-nix/tarball/master/archive/f940ec611cc6914693874ee5e024eba921cab19e.tar.gz";
+          sha256 = "0vri0rivdzjvxrh6lzlwwkh8kzxsn82jp1c2w5rqzhp87y6g2k8z";
+        }) {}).ghcide-ghc865;
+
+    # WIP to make a VS Code devcontainer that can be used for working on plutus code
+    #   docker load < $(nix-build repl.nix --system x86_64-linux -A plutusc-devcontainer)
+    # In VS Code install:
+    #   https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers
+    # Follow these instructions from step 2:
+    #   https://code.visualstudio.com/docs/remote/containers#_quick-start-try-a-dev-container
+    #   (the folder you should open is the plutus one).
+    plutusc-devcontainer = pkgs.dockerTools.buildImage {
+      name = "plutusc-devcontainer";
+      tag = "latest";
+      fromImage = devcontainer;
+      contents = [ plutus-use-cases-shell.ghc ghcide pkgs.haskell-nix.cabal-install ];
+      extraCommands = "mkdir -m 0777 tmp";
+      config = {
+        Env = [
+        "ENV=/nix/var/nix/profiles/default/etc/profile.d/nix.sh"
+        "GIT_SSL_CAINFO=/nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt"
+        "LD_LIBRARY_PATH=/nix/var/nix/profiles/default/lib"
+        "PAGER=less"
+        "PATH=/nix/var/nix/profiles/default/bin:${plutusc}/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        "SSL_CERT_FILE=/nix/var/nix/profiles/default/etc/ssl/certs/ca-bundle.crt"
+        ];
+      };
+    };
 }
