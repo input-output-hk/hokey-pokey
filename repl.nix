@@ -1,20 +1,12 @@
-{ pkgs ? import nixpkgs (haskellNixpkgsArgs // { inherit system; })
+{ sources ? (import ./nix/sources.nix) # // { "haskell.nix" = ../haskell.nix; }
+, pkgs ? import sources.nixpkgs (haskellNixpkgsArgs // { inherit system; })
 # where
-, nixpkgs ? haskellNix + "/nixpkgs"
+, nixpkgs ? sources.nixpkgs
 , haskellNixpkgsArgs ? import haskellNix
 , system ? builtins.currentSystem
-, haskellNix ? # ../haskell.nix
-    builtins.fetchTarball {
-        url = "https://github.com/input-output-hk/haskell.nix/archive/a81943e99cfb2691b7562f0727bd84d0384f456c.tar.gz";
-        # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/a81943e99cfb2691b7562f0727bd84d0384f456c.tar.gz
-        sha256 = "0q5jis51zj0p51rf39zrpjfpcdm3ama4gp7rijq3gy4vl7y92jmr";
-    }
+, haskellNix ? sources."haskell.nix"
 , plutus-src ? # pkgs.haskell-nix.haskellLib.cleanGit { src = ../plutus; }
-    builtins.fetchTarball {
-        url = "https://github.com/input-output-hk/plutus/archive/f4dfa56f9c71cff7a48b165039d893d38d0bce01.tar.gz";
-        # nix-prefetch-url --unpack https://github.com/input-output-hk/plutus/archive/f4dfa56f9c71cff7a48b165039d893d38d0bce01.tar.gz
-        sha256 = "0zfjplchwx9cxdqlji233yvpfkldfbkgmqlgk2kvp39w36lihs28";
-    }
+               sources.plutus
 , haskellCompiler ? "ghc865"
 }: rec {
     shell = pkgs.mkShell {
@@ -242,12 +234,71 @@
             }
             {
                 # required to build the contract and have ghcjs find the plutus plugin in the host package database
+                packages.plutus-ledger.configureFlags = [ "--ghcjs-option=-host-package-db=${plutus-plugin-pkg-db}" ];
+                packages.plutus-ledger.setupBuildFlags = [ "--ghcjs-option=-host-package-db=${plutus-plugin-pkg-db}" ];
                 packages.plutus-use-cases.configureFlags = [ "--ghcjs-option=-host-package-db=${plutus-plugin-pkg-db}" ];
                 packages.plutus-use-cases.setupBuildFlags = [ "--ghcjs-option=-host-package-db=${plutus-plugin-pkg-db}" ];
                 packages.network.configureFlags = [ "--configure-option=--host=x86_64-linux" ];
                 packages.plutus-tx-plugin.doHaddock = false;
             }
         ];
+    });
+    plutus-use-cases-ghc = pkgs.haskell-nix.cabalProject {
+        name = "plutus-use-cases";
+        index-state = "2019-12-13T00:00:00Z";
+        src = plutus-src;
+#        pkg-def-extras = [(hackage: {
+#            packages = {
+#                # needed to build ghc-api-ghcjs properly. (has a <= 1.19.9 constraint)
+#                happy = hackage.happy."1.19.9".revisions.default;
+#            };
+#        })];
+        modules = [
+            {
+                bootPkgs = [ "ghcjs-prim" ];
+                # generate with something like:   for pkg in $(ghc-pkg list|grep -v "package.conf" |xargs); do echo -n " \"${pkg%-*}\""; done
+                # in a ghc shell. E.g. in   nix-shell --pure -p '[ (import ./repl.nix {}).ghc ]'
+                # will need a minor massaging to get into this form:
+                nonReinstallablePkgs = [ "Cabal" "array" "base" "binary" "bytestring" "containers" "deepseq"
+                                         "directory" "filepath" "ghc" "ghc-boot" "ghc-boot-th" "ghc-compact"
+                                         "ghc-heap" "ghc-prim" "ghci" "haskeline" "hpc" "integer-gmp"
+                                         "libiserv" "mtl" "parsec" "pretty" "process" "rts" "stm"
+                                         "template-haskell" "terminfo" "text" "time" "transformers" "unix"
+                                         "xhtml"
+                                         ];
+                # # we need ghc-boot in here for ghcjs.
+                # nonReinstallablePkgs = [ "rts" "ghc-heap" "ghc-prim" "integer-gmp" "integer-simple" "base"
+                #                          "deepseq" "array" "ghc-boot-th" "pretty" "template-haskell"
+
+                #                          "ghc-boot" "binary" "bytestring" "filepath" "directory" "containers"
+                #                          "time" "unix" "Win32" "ghc" "ghci"];
+            }
+            {
+                packages.Cabal.patches = [ "${haskellNix}/overlays/patches/Cabal/fix-data-dir.patch" ];
+                packages.ghc.flags.ghci = pkgs.lib.mkForce true;
+                packages.ghci.flags.ghci = pkgs.lib.mkForce true;
+#                packages.plutus-tx-plugin.flags = { ghcjs-plugin = true; };
+
+#                packages.ghc-api-ghcjs = import (pkgs.haskell-nix.callCabalToNix { name = "ghc-api-ghcjs"; src = "${ghcjs.configured-src}/lib/ghc-api-ghcjs"; });
+                packages.plutus-ledger.doHaddock = false;
+            }
+            {
+                packages.ghc-api-ghcjs.flags.use-host-template-haskell = pkgs.lib.mkForce true;
+            }
+            # We need this module to depend on a newer `Cabal` version for the setups.
+            {
+                setup-depends = [ cabal-project.hsPkgs.Cabal ];
+            }
+        ];
+    };
+    plutus-use-cases-ghc-shell = (plutus-use-cases-ghc.shellFor {
+      packages = ps: [ ps.plutus-use-cases ];
+    }).overrideAttrs (attrs: {
+      buildInputs = [
+        ghcide
+        cabal-project.hsPkgs.cabal-install.components.exes.cabal
+        pkgs.binutils-unwrapped
+      ];
     });
     # To try out the shell do (where ../plutus is the angerman/ghcjs-shell branch of plutus):
     #   nix-shell repl.nix -A plutus-use-cases-shell
@@ -334,14 +385,8 @@
         Env = [ "PATH=/plutusc/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" ];
       };
     };
-    devcontainer = (import (builtins.fetchTarball {
-          url = "https://github.com/nix-community/docker-nixpkgs/archive/53440b208ed438d762a81825a60bab182e7550cc.tar.gz";
-          sha256 = "1qrcijbl21h16qxnpsgfbx3kzvpd5zwvzz48dp4lsra6h80q33ma";
-        })).devcontainer;
-    ghcide = (import (builtins.fetchTarball {
-          url = "https://github.com/cachix/ghcide-nix/tarball/master/archive/f940ec611cc6914693874ee5e024eba921cab19e.tar.gz";
-          sha256 = "0vri0rivdzjvxrh6lzlwwkh8kzxsn82jp1c2w5rqzhp87y6g2k8z";
-        }) {}).ghcide-ghc865;
+    devcontainer = (import sources.docker-nixpkgs).devcontainer;
+    ghcide = (import (sources.ghcide-nix + "/nix") { inherit sources system; }).export.ghcide-ghc865;
 
     # WIP to make a VS Code devcontainer that can be used for working on plutus code
     #   docker load < $(nix-build repl.nix --system x86_64-linux -A plutusc-devcontainer)
@@ -354,7 +399,13 @@
       name = "plutusc-devcontainer";
       tag = "latest";
       fromImage = devcontainer;
-      contents = [ plutus-use-cases-shell.ghc ghcide pkgs.haskell-nix.cabal-install ];
+      contents = [
+        plutus-use-cases-shell.ghc
+        plutus-use-cases-ghc-shell.ghc
+        ghcide
+        cabal-project.hsPkgs.cabal-install.components.exes.cabal
+        pkgs.binutils-unwrapped
+      ];
       extraCommands = "mkdir -m 0777 tmp";
       config = {
         Env = [

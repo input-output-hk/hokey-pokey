@@ -1,0 +1,86 @@
+{
+    "docker-nixpkgs": {
+        "branch": "master",
+        "description": "docker images from nixpkgs [maintainer=@zimbatm]",
+        "homepage": "https://hub.docker.com/u/nixpkgs",
+        "owner": "nix-community",
+        "repo": "docker-nixpkgs",
+        "rev": "53440b208ed438d762a81825a60bab182e7550cc",
+        "sha256": "1qrcijbl21h16qxnpsgfbx3kzvpd5zwvzz48dp4lsra6h80q33ma",
+        "type": "tarball",
+        "url": "https://github.com/nix-community/docker-nixpkgs/archive/53440b208ed438d762a81825a60bab182e7550cc.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "ghcide": {
+        "branch": "master",
+        "description": "A library for building Haskell IDE tooling",
+        "homepage": "",
+        "owner": "digital-asset",
+        "repo": "ghcide",
+        "rev": "c74e9b51f131df446c8e011ae79f3370c683f12b",
+        "sha256": "19m8jgqqgcarr991adxz5cnd2zixvy14v0ima5950jrd8h73nzcm",
+        "type": "tarball",
+        "url": "https://github.com/digital-asset/ghcide/archive/c74e9b51f131df446c8e011ae79f3370c683f12b.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "ghcide-nix": {
+        "branch": "master",
+        "description": "Nix installation for ghcide",
+        "homepage": "https://github.com/digital-asset/ghcide",
+        "owner": "cachix",
+        "repo": "ghcide-nix",
+        "rev": "f940ec611cc6914693874ee5e024eba921cab19e",
+        "sha256": "0vri0rivdzjvxrh6lzlwwkh8kzxsn82jp1c2w5rqzhp87y6g2k8z",
+        "type": "tarball",
+        "url": "https://github.com/cachix/ghcide-nix/archive/f940ec611cc6914693874ee5e024eba921cab19e.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "haskell.nix": {
+        "branch": "hkm/bundled-ghcjs",
+        "description": "Alternative Haskell Infrastructure for Nixpkgs",
+        "homepage": "https://input-output-hk.github.io/haskell.nix",
+        "owner": "input-output-hk",
+        "repo": "haskell.nix",
+        "rev": "1528584633f2b701b05cd23b619a46b4db6959a6",
+        "sha256": "1b2spazm3slny5vyrahxlfmdddlhbyhgm4dk7fcmw4drcinjqnjc",
+        "type": "tarball",
+        "url": "https://github.com/input-output-hk/haskell.nix/archive/1528584633f2b701b05cd23b619a46b4db6959a6.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "niv": {
+        "branch": "master",
+        "description": "Easy dependency management for Nix projects",
+        "homepage": "https://github.com/nmattia/niv",
+        "owner": "nmattia",
+        "repo": "niv",
+        "rev": "5e9671a9a87c240b1c6ce981d04ad23ba4291451",
+        "sha256": "08j7msxkv452pyxnh0sgn6h9930i5mk9mszba49bj5401gzmfb8a",
+        "type": "tarball",
+        "url": "https://github.com/nmattia/niv/archive/5e9671a9a87c240b1c6ce981d04ad23ba4291451.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "nixpkgs": {
+        "branch": "release-19.03",
+        "description": "A read-only mirror of NixOS/nixpkgs tracking the released channels. Send issues and PRs to",
+        "homepage": "https://github.com/NixOS/nixpkgs",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "34c7eb7545d155cc5b6f499b23a7cb1c96ab4d59",
+        "sha256": "11z6ajj108fy2q5g8y4higlcaqncrbjm3dnv17pvif6avagw4mcb",
+        "type": "tarball",
+        "url": "https://github.com/NixOS/nixpkgs/archive/34c7eb7545d155cc5b6f499b23a7cb1c96ab4d59.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "plutus": {
+        "branch": "angerman/ghcjs-shell",
+        "description": "The Plutus language implementation and tools",
+        "homepage": "",
+        "owner": "input-output-hk",
+        "repo": "plutus",
+        "rev": "8373531fa7fc60bb18692cb39be62e1d4c2dd3fe",
+        "sha256": "1vjvsccyx561f0909jqmnmr26irkif03wwh68xn23ys3ippqdqvi",
+        "type": "tarball",
+        "url": "https://github.com/input-output-hk/plutus/archive/8373531fa7fc60bb18692cb39be62e1d4c2dd3fe.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}
