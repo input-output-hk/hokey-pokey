@@ -7,21 +7,21 @@
 , haskellNix ? sources."haskell.nix"
 , plutus-src ? # pkgs.haskell-nix.haskellLib.cleanGit { src = ../plutus; }
                sources.plutus
-, haskellCompiler ? "ghc865"
+, haskellCompiler ? "ghc883"
 }: rec {
     shell = pkgs.mkShell {
         buildInputs = [
-          pkgs.pkgsCross.ghcjs.buildPackages.haskell-nix.compiler.ghc865
+          pkgs.pkgsCross.ghcjs.buildPackages.haskell-nix.compiler.ghc883
           pkgs.haskell-nix.snapshots."lts-14.20".happy.components.exes.happy
           pkgs.haskell-nix.snapshots."lts-14.20".alex.components.exes.alex
           cabal-project.hsPkgs.cabal-install.components.exes.cabal
         ];
     };
-    ghcjs = pkgs.pkgsCross.ghcjs.buildPackages.haskell-nix.compiler.ghc865;
-    ghc = pkgs.haskell-nix.compiler.ghc865;
+    ghcjs = pkgs.pkgsCross.ghcjs.buildPackages.haskell-nix.compiler.ghc883;
+    ghc = pkgs.haskell-nix.compiler.ghc883;
     shell-env = [
-        pkgs.pkgsCross.ghcjs.buildPackages.haskell-nix.compiler.ghc865
-        pkgs.haskell-nix.compiler.ghc865
+        pkgs.pkgsCross.ghcjs.buildPackages.haskell-nix.compiler.ghc883
+        pkgs.haskell-nix.compiler.ghc883
         pkgs.haskell-nix.cabal-install
         pkgs.git
         pkgs.haskell-nix.nix-tools
@@ -386,7 +386,7 @@
       };
     };
     devcontainer = (import sources.docker-nixpkgs).devcontainer;
-    ghcide = (import (sources.ghcide-nix + "/nix") { inherit sources system; }).export.ghcide-ghc865;
+    ghcide = (import (sources.ghcide-nix + "/nix") { inherit sources system; }).export.ghcide-ghc883;
 
     # WIP to make a VS Code devcontainer that can be used for working on plutus code
     #   docker load < $(nix-build repl.nix --system x86_64-linux -A plutusc-devcontainer)

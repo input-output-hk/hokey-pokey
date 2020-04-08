@@ -77,10 +77,10 @@
         "homepage": "",
         "owner": "input-output-hk",
         "repo": "plutus",
-        "rev": "8aa7b1baa3cf9bae60bc12bc04f0e5f7fc7961d6",
-        "sha256": "1j3qmk3jsqfvgxhzww57kv880wx545z59ff7mybnj0b0gyly103z",
+        "rev": "ca92c5d9856f07a812c22b0a0fcac2d18a54b36a",
+        "sha256": "0b2m77ih9vgdr5kbxa1lkgqm3v1xn41a8zkg0204qvzx03zl0c12",
         "type": "tarball",
-        "url": "https://github.com/input-output-hk/plutus/archive/8aa7b1baa3cf9bae60bc12bc04f0e5f7fc7961d6.tar.gz",
+        "url": "https://github.com/input-output-hk/plutus/archive/ca92c5d9856f07a812c22b0a0fcac2d18a54b36a.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }
