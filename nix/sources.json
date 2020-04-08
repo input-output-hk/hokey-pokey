@@ -24,15 +24,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "ghcide-nix": {
-        "branch": "master",
+        "branch": "exec-dynamic-arg",
         "description": "Nix installation for ghcide",
         "homepage": "https://github.com/digital-asset/ghcide",
-        "owner": "cachix",
+        "owner": "hamishmack",
         "repo": "ghcide-nix",
-        "rev": "f940ec611cc6914693874ee5e024eba921cab19e",
-        "sha256": "0vri0rivdzjvxrh6lzlwwkh8kzxsn82jp1c2w5rqzhp87y6g2k8z",
+        "rev": "12bf7643791b6216a5b097165998f7a45063edce",
+        "sha256": "1glssnq95xaij3rpdgrnr6smjnhjmwg6nn9i1k0fmch8xsi6baws",
         "type": "tarball",
-        "url": "https://github.com/cachix/ghcide-nix/archive/f940ec611cc6914693874ee5e024eba921cab19e.tar.gz",
+        "url": "https://github.com/hamishmack/ghcide-nix/archive/12bf7643791b6216a5b097165998f7a45063edce.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "haskell.nix": {
@@ -41,10 +41,10 @@
         "homepage": "https://input-output-hk.github.io/haskell.nix",
         "owner": "input-output-hk",
         "repo": "haskell.nix",
-        "rev": "1528584633f2b701b05cd23b619a46b4db6959a6",
-        "sha256": "1b2spazm3slny5vyrahxlfmdddlhbyhgm4dk7fcmw4drcinjqnjc",
+        "rev": "278dcb7f4bcdd93ca02805c7f8e37306ba09196b",
+        "sha256": "0mm6nqys0jh0lg1gz28j7pcijmpyasgpl6y7jm1xcw1g2ig795n6",
         "type": "tarball",
-        "url": "https://github.com/input-output-hk/haskell.nix/archive/1528584633f2b701b05cd23b619a46b4db6959a6.tar.gz",
+        "url": "https://github.com/input-output-hk/haskell.nix/archive/278dcb7f4bcdd93ca02805c7f8e37306ba09196b.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "niv": {
@@ -77,10 +77,10 @@
         "homepage": "",
         "owner": "input-output-hk",
         "repo": "plutus",
-        "rev": "ca92c5d9856f07a812c22b0a0fcac2d18a54b36a",
-        "sha256": "0b2m77ih9vgdr5kbxa1lkgqm3v1xn41a8zkg0204qvzx03zl0c12",
+        "rev": "371266b7bd2ac4e3352bb8c0f5d487ae810ecceb",
+        "sha256": "18xzi5459nqbybj7hn4wb1xsc936hym1zrlik5pbcan1bmn28ka8",
         "type": "tarball",
-        "url": "https://github.com/input-output-hk/plutus/archive/ca92c5d9856f07a812c22b0a0fcac2d18a54b36a.tar.gz",
+        "url": "https://github.com/input-output-hk/plutus/archive/371266b7bd2ac4e3352bb8c0f5d487ae810ecceb.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     }
 }

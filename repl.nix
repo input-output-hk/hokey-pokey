@@ -2,7 +2,7 @@
 , pkgs ? import sources.nixpkgs (haskellNixpkgsArgs // { inherit system; })
 # where
 , nixpkgs ? sources.nixpkgs
-, haskellNixpkgsArgs ? import haskellNix
+, haskellNixpkgsArgs ? (import haskellNix {}).nixpkgsArgs
 , system ? builtins.currentSystem
 , haskellNix ? sources."haskell.nix"
 , plutus-src ? # pkgs.haskell-nix.haskellLib.cleanGit { src = ../plutus; }
@@ -58,6 +58,7 @@
     plutus-plugin = (pkgs.haskell-nix.cabalProject {
         name = "plutus-plugin";
         index-state = "2019-12-13T00:00:00Z";
+        ghc = pkgs.haskell-nix.compiler.ghc883;
         # plan-sha256 = "0yxrmnviq058z48mw58z737xv98ldipx2ghghp42shzgk279dgg0";
         # materialized = ./materialized/plutus-plugin;
         src = plutus-src;
@@ -107,6 +108,7 @@
     plutus-plugin-pkg-db-configFiles = plutus-plugin.makeConfigFiles {
       fullName = "plutus-plugin-db";
       identifier.name = "plutus-plugin-db";
+      ghc = pkgs.haskell-nix.compiler.ghc883;
       component = {
         depends = [ plutus-plugin.plutus-tx-plugin ];
         libs = [];
@@ -125,7 +127,8 @@
     # restrictive (see the drop-pkg-db-check and no-final-check) patches.
     #
     cabal-project = pkgs.haskell-nix.hackage-project {
-        name = "cabal-install"; version = "3.0.0.0";
+        name = "cabal-install"; version = "3.2.0.0";
+        ghc = pkgs.haskell-nix.compiler.ghc883;
         modules = [
             { packages.Cabal.patches = [
                 ./Cabal-3.0.0.0-drop-pkg-db-check.diff
@@ -245,7 +248,8 @@
     });
     plutus-use-cases-ghc = pkgs.haskell-nix.cabalProject {
         name = "plutus-use-cases";
-        index-state = "2019-12-13T00:00:00Z";
+        index-state = "2020-04-05T00:00:00Z";
+        ghc = pkgs.haskell-nix.compiler.ghc883;
         src = plutus-src;
 #        pkg-def-extras = [(hackage: {
 #            packages = {
