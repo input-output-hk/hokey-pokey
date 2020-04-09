@@ -12,15 +12,15 @@
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "ghcide": {
-        "branch": "master",
+        "branch": "wip/object-files",
         "description": "A library for building Haskell IDE tooling",
         "homepage": "",
-        "owner": "digital-asset",
+        "owner": "mpickering",
         "repo": "ghcide",
-        "rev": "c74e9b51f131df446c8e011ae79f3370c683f12b",
-        "sha256": "19m8jgqqgcarr991adxz5cnd2zixvy14v0ima5950jrd8h73nzcm",
+        "rev": "706c59c97c25c66798815c1dc3ee6885a298918a",
+        "sha256": "0d158xifwvz0y69ah98ckxakzqpz229mq7rpf2bpbmwhnpw3jmm6",
         "type": "tarball",
-        "url": "https://github.com/digital-asset/ghcide/archive/c74e9b51f131df446c8e011ae79f3370c683f12b.tar.gz",
+        "url": "https://github.com/mpickering/ghcide/archive/706c59c97c25c66798815c1dc3ee6885a298918a.tar.gz",
         "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
     },
     "ghcide-nix": {
