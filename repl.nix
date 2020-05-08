@@ -1,14 +1,16 @@
-{ sources ? (import ./nix/sources.nix) # // { "haskell.nix" = ../haskell.nix; }
-, pkgs ? import sources.nixpkgs (haskellNixpkgsArgs // { inherit system; })
+{ sourcesOverride ? {} 
+, sources ?
+    { nixpkgs = haskellNix.sources.nixpkgs-default; }
+      // (import ./nix/sources.nix) // sourcesOverride
+, pkgs ? import sources.nixpkgs (haskellNix.nixpkgsArgs // { inherit system; })
 # where
-, nixpkgs ? sources.nixpkgs
-, haskellNixpkgsArgs ? (import haskellNix {}).nixpkgsArgs
 , system ? builtins.currentSystem
-, haskellNix ? sources."haskell.nix"
-, plutus-src ? # pkgs.haskell-nix.haskellLib.cleanGit { src = ../plutus; }
-               sources.plutus
+, haskellNix ? import sources."haskell.nix" {}
+, plutus-src ? sources.plutus
 , haskellCompiler ? "ghc883"
 }: rec {
+    index-state = "2020-04-25T00:00:00Z";
+
     shell = pkgs.mkShell {
         buildInputs = [
           pkgs.pkgsCross.ghcjs.buildPackages.haskell-nix.compiler.ghc883
@@ -57,7 +59,7 @@
 
     plutus-plugin = (pkgs.haskell-nix.cabalProject {
         name = "plutus-plugin";
-        index-state = "2019-12-13T00:00:00Z";
+        inherit index-state;
         ghc = pkgs.haskell-nix.compiler.ghc883;
         # plan-sha256 = "0yxrmnviq058z48mw58z737xv98ldipx2ghghp42shzgk279dgg0";
         # materialized = ./materialized/plutus-plugin;
@@ -205,7 +207,8 @@
     plutus-use-cases = (pkgs.pkgsCross.ghcjs.haskell-nix.cabalProject {
         name = "plutus-use-cases";
         src = plutus-src;
-        index-state = "2019-12-13T00:00:00Z";
+        inherit index-state;
+        ghc = pkgs.pkgsCross.ghcjs.buildPackages.haskell-nix.compiler.ghc883;
         # We'll need to set this to get `cabal configure` to produce the correct plan.
         # We need `--with-ghcjs=...` to make sure `cabal configure` doesn't complain about `ghcjs` missing.
         # event hough `--with-ghc` is specificed.
@@ -247,8 +250,8 @@
         ];
     });
     plutus-use-cases-ghc = pkgs.haskell-nix.cabalProject {
-        name = "plutus-use-cases";
-        index-state = "2020-04-05T00:00:00Z";
+        name = "plutus-use-cases-ghc";
+        inherit index-state;
         ghc = pkgs.haskell-nix.compiler.ghc883;
         src = plutus-src;
 #        pkg-def-extras = [(hackage: {
@@ -278,7 +281,7 @@
                 #                          "time" "unix" "Win32" "ghc" "ghci"];
             }
             {
-                packages.Cabal.patches = [ "${haskellNix}/overlays/patches/Cabal/fix-data-dir.patch" ];
+                packages.Cabal.patches = [ "${sources."haskell.nix"}/overlays/patches/Cabal/fix-data-dir.patch" ];
                 packages.ghc.flags.ghci = pkgs.lib.mkForce true;
                 packages.ghci.flags.ghci = pkgs.lib.mkForce true;
 #                packages.plutus-tx-plugin.flags = { ghcjs-plugin = true; };
