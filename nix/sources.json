@@ -1,0 +1,74 @@
+{
+    "docker-nixpkgs": {
+        "branch": "master",
+        "description": "docker images from nixpkgs [maintainer=@zimbatm]",
+        "homepage": "https://hub.docker.com/u/nixpkgs",
+        "owner": "nix-community",
+        "repo": "docker-nixpkgs",
+        "rev": "53440b208ed438d762a81825a60bab182e7550cc",
+        "sha256": "1qrcijbl21h16qxnpsgfbx3kzvpd5zwvzz48dp4lsra6h80q33ma",
+        "type": "tarball",
+        "url": "https://github.com/nix-community/docker-nixpkgs/archive/53440b208ed438d762a81825a60bab182e7550cc.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "ghcide": {
+        "branch": "wip/object-files",
+        "description": "A library for building Haskell IDE tooling",
+        "homepage": "",
+        "owner": "mpickering",
+        "repo": "ghcide",
+        "rev": "706c59c97c25c66798815c1dc3ee6885a298918a",
+        "sha256": "0d158xifwvz0y69ah98ckxakzqpz229mq7rpf2bpbmwhnpw3jmm6",
+        "type": "tarball",
+        "url": "https://github.com/mpickering/ghcide/archive/706c59c97c25c66798815c1dc3ee6885a298918a.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "ghcide-nix": {
+        "branch": "exec-dynamic-arg",
+        "description": "Nix installation for ghcide",
+        "homepage": "https://github.com/digital-asset/ghcide",
+        "owner": "hamishmack",
+        "repo": "ghcide-nix",
+        "rev": "12bf7643791b6216a5b097165998f7a45063edce",
+        "sha256": "1glssnq95xaij3rpdgrnr6smjnhjmwg6nn9i1k0fmch8xsi6baws",
+        "type": "tarball",
+        "url": "https://github.com/hamishmack/ghcide-nix/archive/12bf7643791b6216a5b097165998f7a45063edce.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "haskell.nix": {
+        "branch": "hkm/bundled-ghcjs",
+        "description": "Alternative Haskell Infrastructure for Nixpkgs",
+        "homepage": "https://input-output-hk.github.io/haskell.nix",
+        "owner": "input-output-hk",
+        "repo": "haskell.nix",
+        "rev": "6730db22e2dfe7ee0f739a062eaad583e91e6427",
+        "sha256": "1va97w5shw4xpv6fj7rl6smyvc9rlbkiphm737m7cc2ak3kwrrqb",
+        "type": "tarball",
+        "url": "https://github.com/input-output-hk/haskell.nix/archive/6730db22e2dfe7ee0f739a062eaad583e91e6427.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "niv": {
+        "branch": "master",
+        "description": "Easy dependency management for Nix projects",
+        "homepage": "https://github.com/nmattia/niv",
+        "owner": "nmattia",
+        "repo": "niv",
+        "rev": "5e9671a9a87c240b1c6ce981d04ad23ba4291451",
+        "sha256": "08j7msxkv452pyxnh0sgn6h9930i5mk9mszba49bj5401gzmfb8a",
+        "type": "tarball",
+        "url": "https://github.com/nmattia/niv/archive/5e9671a9a87c240b1c6ce981d04ad23ba4291451.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    },
+    "plutus": {
+        "branch": "angerman/ghcjs-shell",
+        "description": "The Plutus language implementation and tools",
+        "homepage": "",
+        "owner": "input-output-hk",
+        "repo": "plutus",
+        "rev": "8fbe00b99cb6987af61bcfd0cd7750ec111cd6c8",
+        "sha256": "03b73lj87vrmhkm478j562ydk5gjgpmp5n6jv1jwl17kbx8c7i83",
+        "type": "tarball",
+        "url": "https://github.com/input-output-hk/plutus/archive/8fbe00b99cb6987af61bcfd0cd7750ec111cd6c8.tar.gz",
+        "url_template": "https://github.com/<owner>/<repo>/archive/<rev>.tar.gz"
+    }
+}

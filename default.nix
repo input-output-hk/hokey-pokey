@@ -4,11 +4,12 @@
 , haskellNixpkgsArgs ? import haskellNix
 , system ? builtins.currentSystem
 # where
-, haskellNix ? builtins.fetchTarball {
-    url = "https://github.com/input-output-hk/haskell.nix/archive/f5d1f8.tar.gz";
-    # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/f5d1f8.tar.gz
-    sha256 = "1720vv0958jhpjkndf7pbb1dc4g5rvycfqqxbarcramiv1ybs4gk";
-  }
+, haskellNix ? ../haskell.nix
+# builtins.fetchTarball {
+#     url = "https://github.com/input-output-hk/haskell.nix/archive/f5d1f8.tar.gz";
+#     # nix-prefetch-url --unpack https://github.com/input-output-hk/haskell.nix/archive/f5d1f8.tar.gz
+#     sha256 = "1720vv0958jhpjkndf7pbb1dc4g5rvycfqqxbarcramiv1ybs4gk";
+#   }
 
 , haskellCompiler ? "ghc865"
 }:
